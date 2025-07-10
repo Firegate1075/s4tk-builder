@@ -1,12 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 //import * as vscode from "vscode";
-import S4TKAssets from "#assets";
-import { findOpenDocument, replaceEntireDocument, resolveGlobPattern } from "#helpers/fs";
+import {  resolveGlobPattern } from "#helpers/fs";
 import { S4TKSettings } from "#helpers/settings";
-import ResourceIndex from "#indexing/resource-index";
+//import ResourceIndex from "#indexing/resource-index";
 import { S4TKConfig } from "#workspace/s4tk-config";
-import StringTableJson from "#stbls/stbl-json";
 import { MessageButton, handleMessageButtonClick } from "./messaging";
 
 /**
@@ -15,17 +13,15 @@ import { MessageButton, handleMessageButtonClick } from "./messaging";
 export default class S4TKWorkspace implements vscode.Disposable {
   private static readonly _blankConfig: S4TKConfig = S4TKConfig.blankProxy();
   private _activeConfig?: S4TKConfig;
-  private _index: ResourceIndex;
+  
 
   get config(): S4TKConfig { return this._activeConfig ?? S4TKWorkspace._blankConfig; }
   get active(): boolean { return Boolean(this._activeConfig); }
-  get index(): ResourceIndex { return this._index; }
 
   constructor(
     public readonly rootUri: vscode.Uri,
   ) {
     this.loadConfig({ showNoConfigError: false });
-    this._index = new ResourceIndex(undefined);
   }
 
   //#region Public Methods
@@ -88,34 +84,8 @@ export default class S4TKWorkspace implements vscode.Disposable {
 
   //#region Private Methods
 
-  private _checkForSourceChange(oldSrc: string | undefined, newSrc: string | undefined) {
-    if (oldSrc) {
-      if (newSrc) {
-        const oldResolved = path.resolve(this.rootUri.fsPath, oldSrc);
-        const newResolved = path.resolve(this.rootUri.fsPath, newSrc);
-        if (oldResolved !== newResolved)
-          this._index.updateSourceFolder(vscode.Uri.file(newResolved));
-      }
-
-      // intentionally not clearing index if newSrc is falsey, config might have
-      // a syntax error but the source is the same as before
-    } else if (newSrc) {
-      const newResolved = path.resolve(this.rootUri.fsPath, newSrc);
-      this._index.updateSourceFolder(vscode.Uri.file(newResolved));
-    }
-  }
 
   private _setConfig(config: S4TKConfig | undefined) {
-    const getIndexRoot = (config?: S4TKConfig) =>
-      config?.workspaceSettings.overrideIndexRoot
-        ? config.workspaceSettings.overrideIndexRoot
-        : config?.buildInstructions.source;
-
-    this._checkForSourceChange(
-      getIndexRoot(this._activeConfig),
-      getIndexRoot(config)
-    );
-
     this._activeConfig = config;
   }
 

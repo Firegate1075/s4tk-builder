@@ -2,8 +2,7 @@ import * as fs from "fs";
 import * as vscode from "vscode";
 import { ResourceKey } from "@s4tk/models/types";
 import { BinaryResourceType, SimDataGroup, TuningResourceType } from "@s4tk/models/enums";
-import { findOpenDocument } from "#helpers/fs";
-import type ResourceIndex from "./resource-index";
+//import type ResourceIndex from "./resource-index";
 import type { XmlMetadata, TuningMetadata, SimDataMetadata, InferredResourceKey, ResourceKeySources } from "./types";
 
 /*
@@ -30,7 +29,7 @@ const _HEADER_REGEX = /^\s*<([IMS])/m;
  * @param metadata Known meta data about the file to get the key for
  * @param index Existing index, if available (required for SimData)
  */
-export function inferKeyFromMetadata(metadata: XmlMetadata, index?: ResourceIndex): InferredResourceKey {
+export function inferKeyFromMetadata(metadata: XmlMetadata): InferredResourceKey {
   if (metadata.uri) {
     const filenameKey = parseKeyFromTgiFilename(metadata.uri.path);
     if (filenameKey) return {
@@ -89,28 +88,28 @@ export function inferKeyFromMetadata(metadata: XmlMetadata, index?: ResourceInde
       sources.type = "This type is the default for SimData files.";
     }
 
-    if (metadata.uri && index && (key.group == undefined || key.instance == undefined)) {
-      const tuning = index.getMetadataFromUri(
-        vscode.Uri.file(metadata.uri.fsPath.replace(/\.SimData\.xml$/, ".xml"))
-      );
-
-      if (tuning) {
-        const tuningKey = inferKeyFromMetadata(tuning);
-
-        if (key.group == undefined && tuningKey.key.type) {
-          const group = SimDataGroup.getForTuning(tuningKey.key.type);
-          if (group) {
-            key.group = group;
-            sources.group = `This group is inferred from the paired tuning's type of "${TuningResourceType[tuningKey.key.type]}".`;
-          }
-        }
-
-        if (key.instance == undefined && tuningKey.key.instance) {
-          key.instance = tuningKey.key.instance;
-          sources.instance = `This instance is inferred from the paired tuning's instance of ${tuningKey.key.instance}`;
-        }
-      }
-    }
+//    if (metadata.uri && index && (key.group == undefined || key.instance == undefined)) {
+//      const tuning = index.getMetadataFromUri(
+//        vscode.Uri.file(metadata.uri.fsPath.replace(/\.SimData\.xml$/, ".xml"))
+//      );
+//
+//      if (tuning) {
+//        const tuningKey = inferKeyFromMetadata(tuning);
+//
+//        if (key.group == undefined && tuningKey.key.type) {
+//          const group = SimDataGroup.getForTuning(tuningKey.key.type);
+//          if (group) {
+//            key.group = group;
+//            sources.group = `This group is inferred from the paired tuning's type of "${TuningResourceType[tuningKey.key.type]}".`;
+//          }
+//        }
+//
+//        if (key.instance == undefined && tuningKey.key.instance) {
+//          key.instance = tuningKey.key.instance;
+//          sources.instance = `This instance is inferred from the paired tuning's instance of ${tuningKey.key.instance}`;
+//        }
+//      }
+//    }
   }
 
   return { key, sources };
@@ -180,53 +179,6 @@ export function parseKeyFromTgiFilename(filename: string): ResourceKey | undefin
   };
 }
 
-/**
- * Inserts a subset of key overrides to XML content, if applicable, and returns
- * the new content to use if anything has changed.
- * 
- * @param xmlContent XML content as a plain text string
- * @param overrides Object of overrides to insert
- */
-export function insertXmlKeyOverrides(
-  xmlContent: string,
-  overrides: Partial<{ [key in 'type' | 'group' | 'instance']: string; }>
-): string | undefined {
-  const lines = _getTopLinesFromFile(xmlContent);
-  const mockMetadata: XmlMetadata = { kind: "tuning" }; // kind is irrelevant
-  for (const line of lines)
-    if (_parseOverrideComment(line, mockMetadata)) break;
-
-  const hadOverrides = Boolean(mockMetadata.comment);
-  const existingOverrides = mockMetadata.comment ?? {};
-  let hasChange = false;
-  for (const overrideKey in overrides) {
-    //@ts-expect-error 3 typing errors here, all safe to ignore
-    if (existingOverrides[overrideKey] !== overrides[overrideKey]) {
-      //@ts-expect-error 3 typing errors here, all safe to ignore
-      existingOverrides[overrideKey] = overrides[overrideKey];
-      hasChange = true;
-    }
-  }
-
-  if (!hasChange) return;
-
-  const commentSegments = [];
-  if (existingOverrides.type)
-    commentSegments.push(`Type: ${existingOverrides.type}`);
-  if (existingOverrides.group)
-    commentSegments.push(`Group: ${existingOverrides.group}`);
-  if (existingOverrides.instance)
-    commentSegments.push(`Instance: ${existingOverrides.instance}`);
-
-  const comment = `<!-- S4TK ${commentSegments.join(", ")} -->`;
-
-  if (hadOverrides) {
-    return xmlContent.replace(_S4TK_COMMENT_REGEX, comment);
-  } else {
-    const eol = xmlContent.split("\n", 1)[0]?.at(-1) === "\r" ? "\r\n" : "\n";
-    return xmlContent.replace(_HEADER_REGEX, `${comment}${eol}<$1`);
-  }
-}
 
 //#region Helper Functions
 
@@ -235,15 +187,7 @@ function _getTopLinesFromFile(uriOrContent: vscode.Uri | string): string[] {
     if (typeof uriOrContent === "string") {
       return uriOrContent.split("\n", _MAX_LINES);
     } else {
-      const document = findOpenDocument(uriOrContent);
-      if (document) {
-        const lines: string[] = [];
-        const maxLines = Math.min(_MAX_LINES, document.lineCount);
-        for (let i = 0; i < maxLines; ++i) lines.push(document.lineAt(i).text);
-        return lines;
-      } else {
         return fs.readFileSync(uriOrContent.fsPath).toString().split("\n", _MAX_LINES);
-      }
     }
   } catch (_) {
     return [];

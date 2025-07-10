@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import * as path from "path"
+//const appDir = path.dirname(require.main.filename);
 
 /**
  * References to asset files that are used throughout the extension.
@@ -61,6 +63,8 @@ namespace S4TKAssets {
     return new Proxy(obj as object, {
       get(target: any, prop: string) {
         const baseUri = _extensionContext.extension.extensionUri;
+        // TODO: get project root directory
+        return path.join(baseUri, root, ...(target[prop]))
         return vscode.Uri.joinPath(baseUri, root, ...(target[prop]));
       }
     });
