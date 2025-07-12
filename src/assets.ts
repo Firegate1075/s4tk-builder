@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as vscode_uri from "vscode-uri" 
 import * as path from "path"
 //const appDir = path.dirname(require.main.filename);
 
@@ -53,19 +54,19 @@ namespace S4TKAssets {
     tuning: ["buff_Example.xml"],
   });
 
+  // TODO: needs to be called or otherwise get project root directory
   export function setExtensionContext(context: vscode.ExtensionContext) {
     _extensionContext = context;
   }
 
   function _uriResolver<T>(root: string, obj: T): {
-    [key in keyof T]: vscode.Uri;
+    [key in keyof T]: vscode_uri.URI;
   } {
     return new Proxy(obj as object, {
       get(target: any, prop: string) {
         const baseUri = _extensionContext.extension.extensionUri;
         // TODO: get project root directory
-        return path.join(baseUri, root, ...(target[prop]))
-        return vscode.Uri.joinPath(baseUri, root, ...(target[prop]));
+        return vscode_uri.Utils.joinPath(baseUri, root, ...(target[prop]));
       }
     });
   }

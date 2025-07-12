@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 //import * as vscode from "vscode";
+import * as vscode_uri from "vscode-uri" 
 import {  resolveGlobPattern } from "#helpers/fs";
 import { S4TKSettings } from "#helpers/settings";
 //import ResourceIndex from "#indexing/resource-index";
@@ -19,7 +20,7 @@ export default class S4TKWorkspace implements vscode.Disposable {
   get active(): boolean { return Boolean(this._activeConfig); }
 
   constructor(
-    public readonly rootUri: vscode.Uri,
+    public readonly rootUri: vscode_uri.URI,
   ) {
     this.loadConfig({ showNoConfigError: false });
   }

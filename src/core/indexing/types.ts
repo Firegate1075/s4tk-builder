@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as vscode_uri from "vscode-uri" 
 import { ResourceKey } from "@s4tk/models/types";
 
 //#region Public Types
@@ -38,7 +39,7 @@ export interface ResourceKeySources {
 //#region Private Types
 
 interface BaseXmlMetadata {
-  uri?: vscode.Uri;
+  uri?: vscode_uri.URI;
   kind: "tuning" | "simdata";
   comment?: {
     type?: string;

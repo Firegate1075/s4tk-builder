@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
+import * as vscode_uri from "vscode-uri" 
 import { ResourceKey } from "@s4tk/models/types";
 import { BinaryResourceType, SimDataGroup, TuningResourceType } from "@s4tk/models/enums";
 //import type ResourceIndex from "./resource-index";
@@ -120,7 +121,7 @@ export function inferKeyFromMetadata(metadata: XmlMetadata): InferredResourceKey
  * 
  * @param uriOrContent URI to or content of the tuning file
  */
-export function inferTuningMetadata(uriOrContent: vscode.Uri | string): TuningMetadata {
+export function inferTuningMetadata(uriOrContent: vscode_uri.URI | string): TuningMetadata {
   const metadata: TuningMetadata = {
     kind: "tuning",
     uri: typeof uriOrContent === "string" ? undefined : uriOrContent,
@@ -150,7 +151,7 @@ export function inferTuningMetadata(uriOrContent: vscode.Uri | string): TuningMe
  * 
  * @param uriOrContent URI to or content of the SimData file
  */
-export function inferSimDataMetadata(uriOrContent: vscode.Uri | string): SimDataMetadata {
+export function inferSimDataMetadata(uriOrContent: vscode_uri.URI | string): SimDataMetadata {
   const metadata: SimDataMetadata = {
     kind: "simdata",
     uri: typeof uriOrContent === "string" ? undefined : uriOrContent,
@@ -182,7 +183,7 @@ export function parseKeyFromTgiFilename(filename: string): ResourceKey | undefin
 
 //#region Helper Functions
 
-function _getTopLinesFromFile(uriOrContent: vscode.Uri | string): string[] {
+function _getTopLinesFromFile(uriOrContent: vscode_uri.URI | string): string[] {
   try {
     if (typeof uriOrContent === "string") {
       return uriOrContent.split("\n", _MAX_LINES);

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
+import * as vscode_uri from "vscode-uri" 
 import { ValidationError, Validator } from "jsonschema";
 
 //#region Types
@@ -28,7 +29,7 @@ interface JsonParseResult<T> {
  */
 export function parseAndValidateJson<T = object>(
   content: string,
-  schemaUri: vscode.Uri
+  schemaUri: vscode_uri.URI
 ): JsonParseResult<T> {
   try {
     const json = JSON.parse(content);
@@ -55,7 +56,7 @@ export function parseAndValidateJson<T = object>(
  */
 export function validateJson(
   json: object,
-  schemaUri: vscode.Uri
+  schemaUri: vscode_uri.URI
 ) {
   const validator = new Validator();
   validator.validate(json, _getSchema(schemaUri), {
@@ -67,9 +68,9 @@ export function validateJson(
 
 //#region Helpers
 
-const _schemaCache = new Map<vscode.Uri, object>();
+const _schemaCache = new Map<vscode_uri.URI, object>();
 
-function _getSchema(uri: vscode.Uri): object {
+function _getSchema(uri: vscode_uri.URI): object {
   if (_schemaCache.has(uri)) return _schemaCache.get(uri)!;
   // intentionally using fs instead of vscode b/c it should be sync
   const buffer = fs.readFileSync(uri.fsPath);
