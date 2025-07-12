@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as vscode from "vscode";
 import * as vscode_uri from "vscode-uri" 
 import { ResourceKey } from "@s4tk/models/types";
 import { BinaryResourceType, SimDataGroup, TuningResourceType } from "@s4tk/models/enums";
@@ -138,7 +137,7 @@ export function inferTuningMetadata(uriOrContent: vscode_uri.URI | string): Tuni
     }
 
     if (_parseTuningDeclaration(line, metadata)) {
-      metadata.range = new vscode.Range(i, 0, i, line.length);
+      // metadata.range = new vscode.Range(i, 0, i, line.length);
       break;
     }
   }

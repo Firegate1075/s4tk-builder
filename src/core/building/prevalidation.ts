@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as vscode from "vscode";
 import { resolveGlobPattern } from "#helpers/fs";
 import { FatalBuildError, addAndGetItem } from "./helpers";
 import { findGlobMatches } from "./resources";

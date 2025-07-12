@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as vscode from "vscode";
 import * as vscode_uri from "vscode-uri" 
 import { ValidationError, Validator } from "jsonschema";
 

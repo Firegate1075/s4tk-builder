@@ -1,4 +1,3 @@
-import * as vscode from "vscode";
 import type S4TKWorkspace from "#workspace/s4tk-workspace";
 
 //#region Types

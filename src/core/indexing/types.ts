@@ -1,4 +1,3 @@
-import * as vscode from "vscode";
 import * as vscode_uri from "vscode-uri" 
 import { ResourceKey } from "@s4tk/models/types";
 
@@ -9,7 +8,7 @@ export type XmlMetadata = TuningMetadata | SimDataMetadata;
 export interface TuningMetadata extends BaseXmlMetadata {
   kind: "tuning";
   root?: "I" | "M";
-  range?: vscode.Range;
+  //range?: vscode.Range;
   attrs?: {
     c?: string;
     i?: string;

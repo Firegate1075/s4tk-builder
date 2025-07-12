@@ -1,5 +1,5 @@
-import * as vscode from "vscode";
-import * as vscode_uri from "vscode-uri" 
+import * as vscode_uri from "vscode-uri"
+import * as fs from "fs" 
 import { S4TKFilename } from "#constants";
 import { S4TKSettings } from "#helpers/settings";
 import S4TKWorkspace from "#workspace/s4tk-workspace";
@@ -56,6 +56,7 @@ async function _outputBuildSummary(workspace: S4TKWorkspace, summary: BuildSumma
   const uri = vscode_uri.Utils.joinPath(workspace.rootUri, S4TKFilename.buildSummary);
   if (!uri) return;
   const content = JSON.stringify(summary, null, S4TKSettings.getSpacesPerIndent());
-  await vscode.workspace.fs.writeFile(uri, Buffer.from(content));
+  //await vscode.workspace.fs.writeFile(uri, Buffer.from(content));
+  await fs.promises.writeFile(uri.fsPath, Buffer.from(content))
   return uri;
 }

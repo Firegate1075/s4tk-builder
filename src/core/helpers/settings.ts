@@ -1,5 +1,3 @@
-import * as vscode from "vscode";
-
 export interface S4TKSettings {
   showCopyConfirmMessage: boolean;
   showConfigLoadedMessage: boolean;
@@ -12,7 +10,7 @@ export interface S4TKSettings {
 type S4TKSettingKey = keyof S4TKSettings;
 
 // TODO: default settings used to be set in package.json
-// this needs to happen some other way
+// this needs to happen in some other way
 
 export namespace S4TKSettings {
   export function get<T extends S4TKSettingKey>(setting: T): S4TKSettings[T] {

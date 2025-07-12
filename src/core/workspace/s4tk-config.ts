@@ -1,5 +1,4 @@
 import { existsSync } from "fs";
-import * as vscode from "vscode";
 import * as vscode_uri from "vscode-uri" 
 import S4TKAssets from "#assets";
 import { S4TKFilename } from "#constants";
@@ -109,7 +108,7 @@ export namespace S4TKConfig {
    * exists or not.
    */
   export function find(workspaceRoot: vscode_uri.URI): ConfigInfo {
-    const uri = vscode_uri.URI.joinPath(workspaceRoot, S4TKFilename.config);
+    const uri = vscode_uri.Utils.joinPath(workspaceRoot, S4TKFilename.config);
     const exists = existsSync(uri.fsPath);
     return { uri, exists };
   }

@@ -1,17 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
-//import * as vscode from "vscode";
 import * as vscode_uri from "vscode-uri" 
 import {  resolveGlobPattern } from "#helpers/fs";
 import { S4TKSettings } from "#helpers/settings";
 //import ResourceIndex from "#indexing/resource-index";
 import { S4TKConfig } from "#workspace/s4tk-config";
-import { MessageButton, handleMessageButtonClick } from "./messaging";
 
 /**
  * A model for a single workspace folder that contains an S4TK project.
  */
-export default class S4TKWorkspace implements vscode.Disposable {
+export default class S4TKWorkspace {
   private static readonly _blankConfig: S4TKConfig = S4TKConfig.blankProxy();
   private _activeConfig?: S4TKConfig;
   
@@ -46,7 +44,7 @@ export default class S4TKWorkspace implements vscode.Disposable {
     }
 
     try {
-      const content = await vscode.workspace.fs.readFile(configInfo.uri);
+      const content = await fs.promises.readFile(configInfo.uri.fsPath);
       const config = S4TKConfig.parse(content.toString());
       if (S4TKSettings.get("showConfigLoadedMessage"))
         vscode.window.showInformationMessage("Successfully loaded S4TK config.");
