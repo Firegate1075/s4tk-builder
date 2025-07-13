@@ -1,6 +1,6 @@
 {
   "name": "s4tk-builder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "displayName": "Sims 4 Toolkit Build System",
   "description": "Build system for Sims 4 Toolkit projects. This command line tool implements the build system of the S4TK Visual Studio Code extension.",
   "private": false,
