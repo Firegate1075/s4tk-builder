@@ -47,6 +47,10 @@
     "bin": "s4tk-builder",
     "commands": "./out/commands",
     "dirname": "s4tk-builder",
-    "topicSeparator": " "
+    "topicSeparator": " ",
+    "helpOptions": {
+      "flagSortOrder": "none",
+      "showFlagOptionsInTitle": false
+    }
   }
 }

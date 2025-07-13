@@ -97,79 +97,9 @@ export default class StringTableJson {
     }
   }
 
-  /**
-   * Generates a new StringTableJson. If using a "metadata" format, all metadata
-   * will be filled in with defaults (instanceBase will use random FNV56).
-   * 
-   * @param format Format to use for JSON
-   */
-  static generate(format?: StringTableJsonFormat): StringTableJson {
-    format ??= S4TKSettings.defaultStringTableJsonType;
-    return (format === "array" || format === "object")
-      ? new StringTableJson(format, [])
-      : new StringTableJson(format, [], {
-        locale: S4TKSettings.defaultStringTableLocale,
-        group: StringTableJson._DEFAULT_GROUP_STRING,
-        instanceBase: formatAsHexString(randomFnv64(56), 14, true),
-      });
-  }
-
-  /**
-   * Converts a binary string table to a StringTableJson.
-   * 
-   * @param key Meta data to use for STBL JSON
-   * @param stbl Binary STBL resource to convert
-   */
-  static fromBinary(key: ResourceKey, stbl: StringTableResource): StringTableJson {
-    const group = formatAsHexString(key.group, 8, true);
-    const locale = (StringTableLocale[StringTableLocale.getLocale(key.instance)]
-      ?? S4TKSettings.defaultStringTableLocale) as StringTableLocaleName;
-    const instanceBase = formatAsHexString(StringTableLocale.getInstanceBase(key.instance), 14, true);
-    return new StringTableJson(
-      S4TKSettings.defaultStringTableJsonType === "array"
-        ? "array-metadata"
-        : "object-metadata",
-      stbl.toJsonObject(true, false) as StringTableJsonEntry[],
-      { group, locale, instanceBase }
-    );
-  }
-
   //#endregion
 
   //#region Public Methods
-
-  /**
-   * Adds an entry to this string table with a random FNV32 hash, and then
-   * returns the key that was generated.
-   */
-  addEntry({ value = "", position = "end" }: {
-    value?: string;
-    position?: "start" | "end";
-  } = {}): number {
-    const key = randomFnv32();
-    if (position === "start") {
-      this._entries.unshift({
-        key: formatStringKey(key),
-        value: value
-      });
-    } else {
-      this._entries.push({
-        key: formatStringKey(key),
-        value: value
-      });
-    }
-    return key;
-  }
-
-  /**
-   * Returns the XML string to use for the entry at the given index.
-   * 
-   * @param index Index of entry to get XML for
-   */
-  getEntryXml(index: number): string {
-    const entry = this._entries[index];
-    return entry ? `${entry.key}<!--${entry.value}-->` : '';
-  }
 
   /**
    * Returns a resource key to use for a binary STBL created from this JSON. If
@@ -189,20 +119,6 @@ export default class StringTableJson {
           : randomFnv64()
       )
     }
-  }
-
-  /**
-   * Adds any missing metadata to this STBL by filling them in with defaults,
-   * and also changes the format to a "metadata" one if needed.
-   * 
-   * @param defaultLocale Locale to insert if it is missing
-   */
-  insertDefaultMetadata() {
-    this._locale ??= S4TKSettings.defaultStringTableLocale;
-    this._group ??= StringTableJson._DEFAULT_GROUP_STRING;
-    this._instanceBase ??= formatAsHexString(randomFnv64(56), 14, true);
-    if (this._format === "object") this._format = "object-metadata";
-    else if (this._format === "array") this._format = "array-metadata";
   }
 
   /**
@@ -231,37 +147,6 @@ export default class StringTableJson {
     }
   }
 
-  /**
-   * Converts this StringTableJson to an array in-place.
-   */
-  toArray() {
-    if (this._format === "object") this._format = "array";
-    else if (this._format === "object-metadata") this._format = "array-metadata";
-  }
-
-  /**
-   * Converts this StringTableJson to an object in-place.
-   */
-  toObject() {
-    if (this._format === "array") this._format = "object";
-    else if (this._format === "array-metadata") this._format = "object-metadata";
-  }
-
-  /**
-   * Creates a new StringTableJson that is a fragment of this one.
-   */
-  toFragment(): StringTableJson {
-    if (!(this.hasMetaData && this.instanceBase && this.locale != null)) {
-      throw new Error("Cannot create a fragment for a STBL JSON that doesn't have a set locale and instance base.");
-    }
-
-    return new StringTableJson(this.format, [], {
-      locale: this.locale,
-      group: this.group,
-      instanceBase: this.instanceBase,
-      fragment: true
-    });
-  }
 
   /**
    * Creates a binary StringTableResource from this StringTableJson.

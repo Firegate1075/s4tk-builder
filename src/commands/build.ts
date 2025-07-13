@@ -7,6 +7,27 @@ import { S4TKFilename } from "#constants"
 import * as path from "path"
 
 
+const LOCALE_OPTIONS = [
+  "English",
+  "ChineseSimplified",
+  "ChineseTraditional",
+  "Czech",
+  "Danish",
+  "Dutch",
+  "Finnish",
+  "French",
+  "German",
+  "Italian",
+  "Japanese",
+  "Korean",
+  "Norwegian",
+  "Polish",
+  "Portuguese",
+  "Russian",
+  "Spanish",
+  "Swedish",
+] as const
+
 export default class Build extends Command {
   static override args = {
     project_root: Args.string({
@@ -24,13 +45,13 @@ export default class Build extends Command {
     release: Flags.boolean({
       char: 'r',
       summary: "build in release mode",
-      helpGroup: "BUILD MODES",
+      helpGroup: "BUILD MODE",
       description: "Build the project in release mode. This creates zip archives after building for distributing the project.",
       exclusive: ["development", "dryRun"],
     }),
     development: Flags.boolean({
       char: 'b',
-      summary: "build in development mode",
+      summary: "build in development mode (default)",
       helpGroup: "BUILD MODE",
       description: "Build the project in development mode. This builds the source files into packages.",
       exclusive: ["release", "dryRun"],
@@ -43,6 +64,22 @@ export default class Build extends Command {
       exclusive: ["release", "development"],
       helpLabel: "-d, --dry-run",
       aliases: ["dry-run"]
+    }),
+    spaces: Flags.integer({
+      min: 0,
+      char: 's',
+      summary: "number of spaces per indent in json output",
+      helpGroup: "SETTINGS",
+      description: "Specify the number of spaces per indent in the generated json output files.",
+      default: 2,
+    }),
+    defaultLocale: Flags.string({
+      char: 'l',
+      summary: "default string table locale",
+      helpGroup: "SETTINGS",
+      description: "Set the default locale of string tables, where no locale is specified in the metadata. Options: " + LOCALE_OPTIONS.join('|'),
+      options: LOCALE_OPTIONS,
+      default: "English",
     })
   }
 
@@ -50,6 +87,8 @@ export default class Build extends Command {
     const {args, flags} = await this.parse(Build)
 
     // TODO: set S4TKSettings according to flags
+    S4TKSettings.spacesPerIndent = flags.spaces
+    S4TKSettings.defaultStringTableLocale = flags.defaultLocale as StringTableLocaleName
 
     let workspace = new S4TKWorkspace(vscode_uri.URI.file(path.resolve(args.project_root)))
     await workspace.loadConfig()
@@ -60,6 +99,5 @@ export default class Build extends Command {
       runBuild(workspace, "dryrun", "Dry-Run Build")
     else // default to development build
       runBuild(workspace, "build", "Development Build")
-
   }
 }
