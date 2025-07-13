@@ -48,10 +48,8 @@ export default class DryRun extends Command {
     await workspace.loadConfig()
 
     let success = await runBuild(workspace, "dryrun", "Dry-Run Build")
-    if (success) {
-      this.exit(0)
-    } else {
-      this.exit(1)
+    if (success == false) {
+      this.error("Build failed", {exit: 1})
     }
   }
 }
