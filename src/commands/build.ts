@@ -49,10 +49,8 @@ export default class Build extends Command {
     await workspace.loadConfig()
     
     let success = await runBuild(workspace, "build", "Development Build")
-    if (success) {
-      this.exit(0)
-    } else {
-      this.exit(1)
+    if (success == false) {
+      this.error("Build failed", {exit: 1})
     }
   }
 }
