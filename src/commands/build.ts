@@ -21,10 +21,29 @@ export default class Build extends Command {
     '<%= config.bin %> <%= command.id %>',
   ]
   static override flags = {
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
+    release: Flags.boolean({
+      char: 'r',
+      summary: "build in release mode",
+      helpGroup: "BUILD MODES",
+      description: "Build the project in release mode. This creates zip archives after building for distributing the project.",
+      exclusive: ["development", "dryRun"],
+    }),
+    development: Flags.boolean({
+      char: 'b',
+      summary: "build in development mode",
+      helpGroup: "BUILD MODE",
+      description: "Build the project in development mode. This builds the source files into packages.",
+      exclusive: ["release", "dryRun"],
+    }),
+    dryRun: Flags.boolean({
+      char: 'd',
+      summary: "build in dry-run mode",
+      helpGroup: "BUILD MODE",
+      description: "Build the project in dry run mode. This compiles the source files but does not write the files.",
+      exclusive: ["release", "development"],
+      helpLabel: "-d, --dry-run",
+      aliases: ["dry-run"]
+    })
   }
 
   public async run(): Promise<void> {
@@ -32,13 +51,15 @@ export default class Build extends Command {
 
     // TODO: set S4TKSettings according to flags
 
-
-    let workspace = new S4TKWorkspace(vscode_uri.URI.file(args.project_root))
-    console.log("Workspace created")
+    let workspace = new S4TKWorkspace(vscode_uri.URI.file(path.resolve(args.project_root)))
     await workspace.loadConfig()
     
-    runBuild(workspace, "build", "Build")
-
+    if (flags.release)
+      runBuild(workspace, "release", "Release Build")
+    else if (flags.dryRun)
+      runBuild(workspace, "dryrun", "Dry-Run Build")
+    else // default to development build
+      runBuild(workspace, "build", "Development Build")
 
   }
 }
