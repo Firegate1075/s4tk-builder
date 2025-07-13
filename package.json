@@ -14,6 +14,7 @@
     "url": "https://github.com/Firegate1075/s4tk-builder/issues"
   },
   "scripts": {
+    "prepare": "npm run compile",
     "compile": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "watch": "tsc -w -p ./"
   },
