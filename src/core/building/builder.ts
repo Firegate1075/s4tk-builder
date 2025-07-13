@@ -252,7 +252,7 @@ function _addStringTable(context: PackageBuildContext, filepath: string, buffer:
       }
 
       if (stblJson.locale == undefined) {
-        fileWarnings.warnings.push(`No locale is set in this STBL's meta data; assuming default of '${S4TKSettings.get("defaultStringTableLocale")}'.`);
+        fileWarnings.warnings.push(`No locale is set in this STBL's meta data; assuming default of '${S4TKSettings.defaultStringTableLocale}'.`);
         context.summary.buildInfo.problems++;
       }
 
@@ -276,7 +276,7 @@ function _addStringTable(context: PackageBuildContext, filepath: string, buffer:
       file: BuildSummary.makeRelative(context.summary, filepath),
       warnings: [
         "Binary STBLs without TGI in filename have no known instance; using a random FNV56. This may cause problems if you are attempting to build the same STBL in multiple languages.",
-        `Binary STBLs without TGI in filename have no known locale; assuming default of '${S4TKSettings.get("defaultStringTableLocale")}'.`
+        `Binary STBLs without TGI in filename have no known locale; assuming default of '${S4TKSettings.defaultStringTableLocale}'.`
       ]
     });
 
@@ -288,7 +288,7 @@ function _addStringTable(context: PackageBuildContext, filepath: string, buffer:
           type: enums.BinaryResourceType.StringTable,
           group: 0x80000000,
           instance: enums.StringTableLocale.setHighByte(
-            enums.StringTableLocale[S4TKSettings.get("defaultStringTableLocale")],
+            enums.StringTableLocale[S4TKSettings.defaultStringTableLocale],
             randomFnv64()
           )
         },
@@ -367,7 +367,7 @@ function _mergeStringTables(context: PackageBuildContext) {
 
 function _generateStringTables(context: PackageBuildContext) {
   const stblsByLocale = _orderStblsByLocale(context.stbls);
-  const primaryLocale = enums.StringTableLocale[S4TKSettings.get("defaultStringTableLocale")];
+  const primaryLocale = enums.StringTableLocale[S4TKSettings.defaultStringTableLocale];
   const primaryStbls = stblsByLocale.get(primaryLocale);
   if (!primaryStbls) return; // can't generate if no primary
   stblsByLocale.delete(primaryLocale);

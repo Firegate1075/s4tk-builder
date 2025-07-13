@@ -147,7 +147,7 @@ export namespace S4TKConfig {
    * @param config Config to stringify
    */
   export function stringify(config: S4TKConfig): string {
-    return JSON.stringify(config, null, S4TKSettings.getSpacesPerIndent());
+    return JSON.stringify(config, null, S4TKSettings.spacesPerIndent);
   }
 }
 

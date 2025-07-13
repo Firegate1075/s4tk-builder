@@ -19,9 +19,7 @@ export default class S4TKWorkspace {
 
   constructor(
     public readonly rootUri: vscode_uri.URI,
-  ) {
-    this.loadConfig({ showNoConfigError: false });
-  }
+  ) {}
 
   //#region Public Methods
 
@@ -35,10 +33,8 @@ export default class S4TKWorkspace {
   async loadConfig({ showNoConfigError = false }: { showNoConfigError?: boolean; } = {}) {
     const configInfo = S4TKConfig.find(this.rootUri);
     if (!configInfo.exists) {
-      if (showNoConfigError) vscode.window.showWarningMessage(
-        "No S4TK config file was found at the root of this workspace.",
-        MessageButton.CreateProject,
-      ).then(handleMessageButtonClick);
+      if (showNoConfigError) console.warn("No S4TK config file was found in this directory.");
+      if (showNoConfigError) console.warn("No S4TK config file was found in this directory.");
       this._setConfig(undefined);
       return;
     }
@@ -46,15 +42,11 @@ export default class S4TKWorkspace {
     try {
       const content = await fs.promises.readFile(configInfo.uri.fsPath);
       const config = S4TKConfig.parse(content.toString());
-      if (S4TKSettings.get("showConfigLoadedMessage"))
-        vscode.window.showInformationMessage("Successfully loaded S4TK config.");
+      if (S4TKSettings.showConfigLoadedMessage)
+        console.info("Successfully loaded S4TK config.");
       this._setConfig(config);
     } catch (e) {
-      vscode.window.showErrorMessage(
-        `Could not validate S4TK config. You will not be able to build your project until all errors are resolved and the config has been reloaded. [${e}]`,
-        MessageButton.GetHelp,
-        MessageButton.ReportProblem,
-      ).then(handleMessageButtonClick);
+      console.error(`Could not validate S4TK config. [${e}]`);
       this._setConfig(undefined);
     }
   }

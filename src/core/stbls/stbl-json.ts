@@ -104,11 +104,11 @@ export default class StringTableJson {
    * @param format Format to use for JSON
    */
   static generate(format?: StringTableJsonFormat): StringTableJson {
-    format ??= S4TKSettings.get("defaultStringTableJsonType");
+    format ??= S4TKSettings.defaultStringTableJsonType;
     return (format === "array" || format === "object")
       ? new StringTableJson(format, [])
       : new StringTableJson(format, [], {
-        locale: S4TKSettings.get("defaultStringTableLocale"),
+        locale: S4TKSettings.defaultStringTableLocale,
         group: StringTableJson._DEFAULT_GROUP_STRING,
         instanceBase: formatAsHexString(randomFnv64(56), 14, true),
       });
@@ -123,10 +123,10 @@ export default class StringTableJson {
   static fromBinary(key: ResourceKey, stbl: StringTableResource): StringTableJson {
     const group = formatAsHexString(key.group, 8, true);
     const locale = (StringTableLocale[StringTableLocale.getLocale(key.instance)]
-      ?? S4TKSettings.get("defaultStringTableLocale")) as StringTableLocaleName;
+      ?? S4TKSettings.defaultStringTableLocale) as StringTableLocaleName;
     const instanceBase = formatAsHexString(StringTableLocale.getInstanceBase(key.instance), 14, true);
     return new StringTableJson(
-      S4TKSettings.get("defaultStringTableJsonType") === "array"
+      S4TKSettings.defaultStringTableJsonType === "array"
         ? "array-metadata"
         : "object-metadata",
       stbl.toJsonObject(true, false) as StringTableJsonEntry[],
@@ -183,7 +183,7 @@ export default class StringTableJson {
         ? parseInt(this._group, 16)
         : StringTableJson._DEFAULT_GROUP_INT,
       instance: StringTableLocale.setHighByte(
-        StringTableLocale[this._locale ?? S4TKSettings.get("defaultStringTableLocale")],
+        StringTableLocale[this._locale ?? S4TKSettings.defaultStringTableLocale],
         this._instanceBase
           ? BigInt(this._instanceBase)
           : randomFnv64()
@@ -198,7 +198,7 @@ export default class StringTableJson {
    * @param defaultLocale Locale to insert if it is missing
    */
   insertDefaultMetadata() {
-    this._locale ??= S4TKSettings.get("defaultStringTableLocale");
+    this._locale ??= S4TKSettings.defaultStringTableLocale;
     this._group ??= StringTableJson._DEFAULT_GROUP_STRING;
     this._instanceBase ??= formatAsHexString(randomFnv64(56), 14, true);
     if (this._format === "object") this._format = "object-metadata";
@@ -225,9 +225,9 @@ export default class StringTableJson {
         instanceBase: this._instanceBase,
         fragment: this._fragment,
         entries: entries,
-      }, null, S4TKSettings.getSpacesPerIndent());
+      }, null, S4TKSettings.spacesPerIndent);
     } else {
-      return JSON.stringify(entries, null, S4TKSettings.getSpacesPerIndent());
+      return JSON.stringify(entries, null, S4TKSettings.spacesPerIndent);
     }
   }
 

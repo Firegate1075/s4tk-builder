@@ -31,7 +31,7 @@ export default class StringTableProxy {
       (this._stbl as StringTableResource).add(key, value);
       return key;
     } else {
-      const position = S4TKSettings.get("newStringsToStartOfStringTable") ? "start" : "end";
+      const position = S4TKSettings.newStringsToStartOfStringTable ? "start" : "end";
       return (this._stbl as StringTableJson).addEntry({ value, position });
     }
   }

@@ -1,8 +1,20 @@
 import {Args, Command, Flags} from '@oclif/core'
+import { S4TKSettings } from "#helpers/settings"
+import S4TKWorkspace from "#workspace/s4tk-workspace";
+import * as vscode_uri from "vscode-uri"
+import { runBuild } from "#building/build-runner"
+import { S4TKFilename } from "#constants"
+import * as path from "path"
+
 
 export default class Build extends Command {
   static override args = {
-    file: Args.string({description: 'file to read'}),
+    project_root: Args.string({
+      name: "project-root",
+      description: 'path to the s4tk project',
+      required: false,
+      default: process.cwd()
+    }),
   }
   static override description = 'describe the command here'
   static override examples = [
@@ -18,10 +30,15 @@ export default class Build extends Command {
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Build)
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from C:\\Users\\linus\\Documents\\GitHub\\s4tk-builder\\src\\commands\\build.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
-    }
+    // TODO: set S4TKSettings according to flags
+
+
+    let workspace = new S4TKWorkspace(vscode_uri.URI.file(args.project_root))
+    console.log("Workspace created")
+    await workspace.loadConfig()
+    
+    runBuild(workspace, "build", "Build")
+
+
   }
 }

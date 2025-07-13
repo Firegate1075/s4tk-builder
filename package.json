@@ -13,7 +13,6 @@
   "bugs": {
     "url": "https://github.com/Firegate1075/s4tk-builder/issues"
   },
-  "type": "module",
   "scripts": {
     "compile": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "watch": "tsc -w -p ./"
@@ -26,6 +25,7 @@
     "glob": "^10.2.2",
     "jsonschema": "^1.4.1",
     "jszip": "^3.10.1",
+    "lru-cache": "^11.1.0",
     "uuid": "^9.0.0",
     "vscode-uri": "^3.1.0"
   },
@@ -45,7 +45,7 @@
   },
   "oclif": {
     "bin": "s4tk-builder",
-    "commands": "./dist/commands",
+    "commands": "./out/commands",
     "dirname": "s4tk-builder",
     "topicSeparator": " "
   }

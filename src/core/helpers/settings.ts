@@ -1,29 +1,25 @@
-export interface S4TKSettings {
-  showCopyConfirmMessage: boolean;
+type StringTableJsonType = "array" | "object"
+
+class _S4TKSettings {
   showConfigLoadedMessage: boolean;
-  showConfigUnloadedMessage: boolean;
   newStringsToStartOfStringTable: boolean;
-  defaultStringTableJsonType: "array" | "object";
+  defaultStringTableJsonType: StringTableJsonType;
   defaultStringTableLocale: StringTableLocaleName;
-}
+  spacesPerIndent: number;
 
-type S4TKSettingKey = keyof S4TKSettings;
-
-// TODO: default settings used to be set in package.json
-// this needs to happen in some other way
-
-export namespace S4TKSettings {
-  export function get<T extends S4TKSettingKey>(setting: T): S4TKSettings[T] {
-    const config = vscode.workspace.getConfiguration("s4tk");
-    return config.get(setting) as S4TKSettings[T];
-  }
-
-  export function set<T extends S4TKSettingKey>(setting: T, value: S4TKSettings[T]) {
-    const config = vscode.workspace.getConfiguration("s4tk");
-    config.update(setting, value);
-  }
-
-  export function getSpacesPerIndent(): number {
-    return vscode.workspace.getConfiguration("editor").get("tabSpaces") ?? 2;
+  constructor(
+    showConfigLoadedMessage = false,
+    newStringsToStartOfStringTable = true,
+    defaultStringTableJsonType = "array" as StringTableJsonType,
+    defaultStringTableLocale = "English" as StringTableLocaleName,
+    spacesPerIndent = 2
+  ) {
+    this.showConfigLoadedMessage = showConfigLoadedMessage
+    this.newStringsToStartOfStringTable = newStringsToStartOfStringTable
+    this.defaultStringTableJsonType = defaultStringTableJsonType
+    this.defaultStringTableLocale = defaultStringTableLocale
+    this.spacesPerIndent = spacesPerIndent
   }
 }
+
+export var S4TKSettings = new _S4TKSettings()

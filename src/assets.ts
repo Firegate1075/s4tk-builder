@@ -1,5 +1,6 @@
 import * as vscode_uri from "vscode-uri" 
 import * as path from "path"
+import * as url from "url"
 //const appDir = path.dirname(require.main.filename);
 
 /**
@@ -19,9 +20,8 @@ namespace S4TKAssets {
   } {
     return new Proxy(obj as object, {
       get(target: any, prop: string) {
-        // TODO: get project root directory
-        // const baseUri = _extensionContext.extension.extensionUri;
-        return vscode_uri.Utils.joinPath(baseUri, root, ...(target[prop]));
+        const module_root_dir = path.dirname(__dirname)
+        return vscode_uri.Utils.joinPath(vscode_uri.URI.file(module_root_dir), root, ...(target[prop]));
       }
     });
   }
