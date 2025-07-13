@@ -48,6 +48,11 @@ export default class Build extends Command {
     let workspace = new S4TKWorkspace(vscode_uri.URI.file(path.resolve(args.project_root)))
     await workspace.loadConfig()
     
-    runBuild(workspace, "build", "Development Build")
+    let success = await runBuild(workspace, "build", "Development Build")
+    if (success) {
+      this.exit(0)
+    } else {
+      this.exit(1)
+    }
   }
 }

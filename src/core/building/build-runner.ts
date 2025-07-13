@@ -29,12 +29,15 @@ export async function runBuild(workspace: S4TKWorkspace, mode: BuildMode, readab
       warnIf(summary.written.missingSourceFiles.length, "missing file");
       const warningMsg = warnings.length ? ` [${warnings.join("; ")}]` : "";
       console.info(`S4TK ${readableMode} Successful${warningMsg}`);
+      return true
     } else if (buildSummaryUri) {
       console.error(
         `S4TK ${readableMode} Failed: ${summary.buildInfo.fatalErrorMessage}. See: ${path.basename(buildSummaryUri.fsPath)}`
       );
+      return false
     } else {
       console.error(`S4TK ${readableMode} Failed: ${summary.buildInfo.fatalErrorMessage}`);
+      return false
     }
 }
 

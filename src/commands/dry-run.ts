@@ -47,6 +47,11 @@ export default class DryRun extends Command {
     let workspace = new S4TKWorkspace(vscode_uri.URI.file(path.resolve(args.project_root)))
     await workspace.loadConfig()
 
-    runBuild(workspace, "dryrun", "Dry-Run Build")
+    let success = await runBuild(workspace, "dryrun", "Dry-Run Build")
+    if (success) {
+      this.exit(0)
+    } else {
+      this.exit(1)
+    }
   }
 }
