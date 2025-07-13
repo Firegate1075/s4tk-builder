@@ -6,8 +6,7 @@ import { runBuild } from "#building/build-runner"
 import { LOCALE_OPTIONS } from "#constants"
 import * as path from "path"
 
-
-export default class Build extends Command {
+export default class Release extends Command {
   static override args = {
     project_root: Args.string({
       name: "project-root",
@@ -16,7 +15,7 @@ export default class Build extends Command {
       default: process.cwd()
     }),
   }
-  static override description = 'Build the project in development mode. This builds the source files into packages.'
+  static override description = 'Build the project in release mode. This creates zip archives after building for distributing the project.'
   static override examples = [
     '<%= config.bin %> <%= command.id %>',
   ]
@@ -40,14 +39,14 @@ export default class Build extends Command {
   }
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(Build)
+    const {args, flags} = await this.parse(Release)
 
     S4TKSettings.spacesPerIndent = flags.spaces
     S4TKSettings.defaultStringTableLocale = flags.defaultLocale as StringTableLocaleName
 
     let workspace = new S4TKWorkspace(vscode_uri.URI.file(path.resolve(args.project_root)))
     await workspace.loadConfig()
-    
-    runBuild(workspace, "build", "Development Build")
+
+    runBuild(workspace, "release", "Release Build")
   }
 }
